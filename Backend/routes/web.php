@@ -18,9 +18,3 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('/test', function () {
-    event(new PrivateChannelEvent(1, 'Hey 1',));
-    event(new PublicChannelEvent('Hey 2'));
-    return 'done';
-});
