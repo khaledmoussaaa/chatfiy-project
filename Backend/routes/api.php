@@ -12,3 +12,24 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::group(['middleware' => 'api'], function () {
+
+    // Authuntication
+    Route::group(['prefix' => 'auth'], function () {
+        Route::post('login', 'Auth\AuthController@login');
+        Route::post('register', 'Auth\AuthController@register');
+        Route::post('/forgot-password', 'Auth\AuthController@forgetPassowrd')->name('password.email');
+        Route::post('/reset-password', 'Auth\AuthController@resetPassword')->name('password.reset');
+    });
+
+    // Authorizations
+    Route::group(['middleware' => 'auth:api'], function () {
+        // About User
+        Route::group(['prefix' => 'auth'], function () {
+            Route::post('me', 'Auth\AuthController@me');
+            Route::post('refresh', 'Auth\AuthController@refresh');
+            Route::post('logout', 'Auth\AuthController@logout');
+        });
+    });
+});

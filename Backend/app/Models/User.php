@@ -77,7 +77,7 @@ class User extends Authenticatable implements JWTSubject, HasMedia, LaratrustUse
     // Spatie Media Library Collections
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('avatar')->singleFile();
+        $this->addMediaCollection('avatars')->singleFile();
     }
 
     // --------------------- Relations --------------------- //
