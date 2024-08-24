@@ -2,11 +2,11 @@
 
 // For Auth Response
 if (!function_exists('authResponse')) {
-    function authResponse($token = null, $message = null, $status = 200)
+    function authResponse($token = null, $message = 'success', $success = true, $status = 200)
     {
         return response()->json([
             'token' => $token,
-            'user_id' => auth()->user()->id,
+            'success' => $success,
             'message' => $message,
             'status' => $status,
             'expire_in' => auth()->factory()->getTTL(),
@@ -16,10 +16,11 @@ if (!function_exists('authResponse')) {
 
 // For Content Response
 if (!function_exists('contentResponse')) {
-    function contentResponse($content, $message = null, $status = 200)
+    function contentResponse($content, $message = 'success', $success = true, $status = 200)
     {
         return response()->json([
             'content' => $content,
+            'success' => $success,
             'message' => $message,
             'status' => $status,
         ], $status);
@@ -27,22 +28,12 @@ if (!function_exists('contentResponse')) {
 }
 
 // For Success Response
-if (!function_exists('successResponse')) {
-    function successResponse($message = null, $status = 200)
+if (!function_exists('messageResponse')) {
+    function messageResponse($message = 'success', $success = true, $status = 200)
     {
         return response()->json([
+            'success' => $success,
             'message' => $message,
-            'status' => $status,
-        ], $status);
-    }
-}
-
-// For Failed Response
-if (!function_exists('failedResponse')) {
-    function failedResponse($error = null, $status = 404)
-    {
-        return response()->json([
-            'error' => $error,
             'status' => $status,
         ], $status);
     }
