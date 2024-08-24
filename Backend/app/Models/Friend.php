@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class Freind extends Model
+class Friend extends Model
 {
     use HasFactory, Notifiable;
 
@@ -16,9 +16,9 @@ class Freind extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'post_id',
         'user_id',
-        'content',
+        'friend_id',
+        'status',
     ];
     /**
      * The attributes that should be cast.
@@ -31,5 +31,14 @@ class Freind extends Model
     ];
 
     // --------------------- Relations --------------------- //   
-    // Post relationship
+    // User relationship
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function friend()
+    {
+        return $this->belongsTo(User::class, 'friend_id');
+    }
 }
