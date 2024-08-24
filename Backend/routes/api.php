@@ -34,5 +34,6 @@ Route::group(['middleware' => 'api'], function () {
         
         // Chats Resource
         Route::apiResource('chats', 'Chats\ChatsController');
+        Route::apiResource('messages', 'Chats\MessagesController');
     });
 });
