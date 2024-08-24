@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->longText('content'); 
+            $table->longText('comment'); 
             $table->integer('total_likes')->default(0);
             $table->timestamps();
         });

@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 use Laratrust\Contracts\LaratrustUser;
 use Laratrust\Traits\HasRolesAndPermissions;
- 
+
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -89,11 +89,19 @@ class User extends Authenticatable implements JWTSubject, HasMedia, LaratrustUse
             ->wherePivot('status', 'accepted');
     }
 
+    // Get IDs of friends
+    public function getFriendIds()
+    {
+        return $this->friends()->pluck('users.id');
+    }
+
     // Posts relationship
     public function posts()
     {
         return $this->hasMany(Post::class, 'user_id');
     }
+
+
 
     // Chats relationship
     public function chats()

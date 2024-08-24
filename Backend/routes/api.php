@@ -41,5 +41,13 @@ Route::group(['middleware' => 'api'], function () {
         Route::get('get/friends', 'Friends\FriendsController@getFriends');
         Route::get('search/friends', 'Friends\FriendsController@searchUsers');
         Route::delete('remove/friends/{friend_id}', 'Friends\FriendsController@removeFriend');
+        
+        // Posts Resource
+        Route::apiResource('posts', 'Posts\PostsController');
+        Route::post('posts/{post}', 'Posts\PostsController@update')->name('posts.update');
+        Route::get('posts-friends', 'Posts\PostsController@postsFriends');
+        Route::post('posts-like', 'Posts\PostsController@likeOrUnlikePost');
+        Route::post('posts-comment', 'Posts\PostsController@addComment');
+        Route::post('posts-getComment/{post_id}', 'Posts\PostsController@getComments');
     });
 });

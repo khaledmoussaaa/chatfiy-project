@@ -18,7 +18,7 @@ class Comment extends Model
     protected $fillable = [
         'post_id',
         'user_id',
-        'content',
+        'comment',
     ];
     /**
      * The attributes that should be cast.
