@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => 'api'], function () {
 
-    // Authuntication
+    // Authuntication 
     Route::group(['prefix' => 'auth'], function () {
         Route::post('login', 'Auth\AuthController@login');
         Route::post('register', 'Auth\AuthController@register');
@@ -31,5 +31,8 @@ Route::group(['middleware' => 'api'], function () {
             Route::post('refresh', 'Auth\AuthController@refresh');
             Route::post('logout', 'Auth\AuthController@logout');
         });
+        
+        // Chats Resource
+        Route::apiResource('chats', 'Chats\ChatsController');
     });
 });

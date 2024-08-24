@@ -38,3 +38,10 @@ if (!function_exists('messageResponse')) {
         ], $status);
     }
 }
+// Get Auth User ID
+if (!function_exists('auth_id')) {
+    function auth_id()
+    {
+        return auth()->user()->id;
+    }
+}

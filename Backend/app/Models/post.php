@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class post extends Model
+class Post extends Model
 {
     use HasFactory, Notifiable, InteractsWithMedia;
 
