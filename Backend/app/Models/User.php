@@ -50,6 +50,8 @@ class User extends Authenticatable implements JWTSubject, HasMedia, LaratrustUse
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'created_at' => 'datetime:Y-m-d h:m:a',
+        'updated_at' => 'datetime:Y-m-d h:m:a',
     ];
 
     /**
@@ -79,8 +81,35 @@ class User extends Authenticatable implements JWTSubject, HasMedia, LaratrustUse
     }
 
     // --------------------- Relations --------------------- //
-    public function nursery()
+    // Friends relationship
+    public function friends()
     {
-        return $this->hasOne(Nursery::class, 'user_id');
+        return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id')
+            ->withPivot('status')
+            ->wherePivot('status', 'accepted');
+    }
+
+    // Posts relationship
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'user_id');
+    }
+
+    // Chats relationship
+    public function chats()
+    {
+        return $this->belongsToMany(Chat::class, 'chats', 'user1_id', 'user2_id');
+    }
+
+    // Liked Posts relationship
+    public function likedPosts()
+    {
+        return $this->belongsToMany(Post::class, 'likes')->withTimestamps();
+    }
+
+    // Comments relationship
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'user_id');
     }
 }
