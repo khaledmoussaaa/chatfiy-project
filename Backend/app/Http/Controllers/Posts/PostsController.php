@@ -18,7 +18,7 @@ class PostsController extends Controller
      */
     public function index()
     {
-        $posts = Post::where('user_id', auth_id())->with('user', 'likes', 'comments')->get();
+        $posts = Post::where('user_id', auth_id())->with('media', 'user', 'likes', 'comments')->get();
         return contentResponse($posts);
     }
 
@@ -44,6 +44,7 @@ class PostsController extends Controller
     public function show(Post $post)
     {
         //Show Specific Post
+        $post->getFirstMediaUrl('posts');
         return contentResponse($post);
     }
 
@@ -85,34 +86,63 @@ class PostsController extends Controller
      */
     public function postsFriends()
     {
-        $user = auth()->user();
-        $friendIds = $user->getFriendIds();
+        $userId = auth()->user()->id;
 
-        // If there are no friends, return an empty response
-        if ($friendIds->isEmpty()) {
-            return contentResponse([], 'No posts found', 200);
-        }
+        // Get the list of friend IDs where the user is either the requester or the receiver
+        $friendIds = User::whereIn('id', function ($query) use ($userId) {
+            $query->select('friend_id')
+                ->from('friends')
+                ->where('user_id', $userId)
+                ->where('status', 'accepted');
+        })->orWhereIn('id', function ($query) use ($userId) {
+            $query->select('user_id')
+                ->from('friends')
+                ->where('friend_id', $userId)
+                ->where('status', 'accepted');
+        })->pluck('id');
 
-        // Include the authenticated user's ID only if they have friends
-        $friendIds->push($user->id);
+        // Include the authenticated user's ID
+        $friendIds->push($userId);
 
-        // Fetch posts made by friends or by the user themselves
+        // Fetch the latest posts made by friends or by the user themselves
         $posts = Post::whereIn('user_id', $friendIds)
-            ->with(['user', 'likes', 'comments.user'])
+            ->with(['media', 'user.media', 'likes', 'comments.user'])
             ->latest()
             ->get();
 
-        $posts->getFirstMediaUrl('posts');
-        // Check if the authenticated user has liked each post
-        $postsWithLikeStatus = $posts->map(function ($post) use ($user) {
-            // Determine if the current user has liked this post
-            $userHasLiked = $post->likes->contains('user_id', $user->id);
-
-            // Add a new key 'isLiked' to each post
-            return $post->setAttribute('isLiked', $userHasLiked);
+        // Structure the response with the necessary fields
+        $response = $posts->map(function ($post) use ($userId) {
+            return [
+                'user_id' => $post->user->id,
+                'user_name' => $post->user->name,
+                'user_media' => $post->user->media->first() ? $post->user->media->first()->original_url : null,
+                'post_id' => $post->id,
+                'post_media' => $post->media->first()->original_url,
+                'title' => $post->title,
+                'content' => $post->content,
+                'created_at' => $post->created_at->format('Y-m-d H:i:s'),
+                'isLiked' => $post->likes->contains('user_id', $userId),
+                'total_likes' => $post->likes->count(),
+                'comments' => $post->comments->map(function ($comment) {
+                    return [
+                        'user_id' => $comment->user->id,
+                        'user_name' => $comment->user->name,
+                        'user_media' => $comment->user->media->first()->original_url,
+                        'comment' => $comment->comment,
+                        'created_at' => $comment->created_at->format('Y-m-d H:i:s')
+                    ];
+                }),
+                'likes' => $post->likes->map(function ($like) {
+                    return [
+                        'user_id' => $like->user->id,
+                        'user_name' => $like->user->name,
+                        'user_media' => $like->user->media->first()->original_url
+                    ];
+                }),
+            ];
         });
 
-        return contentResponse($posts);
+        return contentResponse($response);
     }
 
     /**
