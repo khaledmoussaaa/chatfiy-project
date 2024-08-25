@@ -33,7 +33,7 @@ class PostsController extends Controller
 
         $post = Post::create($data);
         if ($request->hasFile('media')) {
-            $post->addMediaFromRequest('meida')->toMediaCollection('posts');
+            $post->addMediaFromRequest('media')->toMediaCollection('posts');
         }
         return messageResponse();
     }
@@ -85,20 +85,36 @@ class PostsController extends Controller
      */
     public function postsFriends()
     {
-        $userId = auth_id();
         $user = auth()->user();
+        $friendIds = $user->getFriendIds();
 
-        // Get the IDs of friends
-        $friendIds = $user->getFriendIds()->push($userId);
+        // If there are no friends, return an empty response
+        if ($friendIds->isEmpty()) {
+            return contentResponse([], 'No posts found', 200);
+        }
 
-        // Fetch posts made by friends
+        // Include the authenticated user's ID only if they have friends
+        $friendIds->push($user->id);
+
+        // Fetch posts made by friends or by the user themselves
         $posts = Post::whereIn('user_id', $friendIds)
-            ->with(['user', 'likes', 'comments'])
-            ->latest() // Optional: to get the most recent posts first
+            ->with(['user', 'likes', 'comments.user'])
+            ->latest()
             ->get();
+
+        $posts->getFirstMediaUrl('posts');
+        // Check if the authenticated user has liked each post
+        $postsWithLikeStatus = $posts->map(function ($post) use ($user) {
+            // Determine if the current user has liked this post
+            $userHasLiked = $post->likes->contains('user_id', $user->id);
+
+            // Add a new key 'isLiked' to each post
+            return $post->setAttribute('isLiked', $userHasLiked);
+        });
 
         return contentResponse($posts);
     }
+
     /**
      * Remove the specified resource from storage.
      */

@@ -23,10 +23,10 @@ class RegisterRequest extends FormRequest
     {
         return [
             // Register Validations
-            'image' => 'nullable|image',
+            'media' => 'required|image',
             'name' => 'required|string|min:3|max:30',
             'email' => 'required|email:filter|unique:users,email',
-            'phone' => 'required|min:9|max:14|unique:users,phone',
+            'phone' => 'required|unique:users,phone',
             'password' => 'required|min:8|max:25|confirmed',
         ];
     }

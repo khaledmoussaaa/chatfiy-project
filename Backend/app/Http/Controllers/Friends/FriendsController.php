@@ -29,7 +29,7 @@ class FriendsController extends Controller
         })->orWhere(function ($query) use ($userId, $friendId) {
             $query->where('user_id', $friendId)
                 ->where('friend_id', $userId);
-        })->where('status', 'accepted')->first();
+        })->first();
 
         if ($friend) {
             $friend->update($data);

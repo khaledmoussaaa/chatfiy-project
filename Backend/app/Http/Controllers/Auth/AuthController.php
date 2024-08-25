@@ -36,7 +36,9 @@ class AuthController extends Controller
         try {
             $user = User::create($request->validated());
 
-            $user->addMediaFromRequest('media')->toMediaCollection('avatars');
+            if ($request->hasFile('media')) {
+                $user->addMediaFromRequest('media')->toMediaCollection('avatars');
+            }
 
             if (!$user) {
                 return messageResponse('An occured error..!!', false, 500);
@@ -85,7 +87,7 @@ class AuthController extends Controller
             $user->forceFill(['password' => $password])->save();
             event(new PasswordReset($user));
         });
-        return $status === Password::PASSWORD_RESET ? messageResponse('Password reseted successfully') : messageResponse('Failed, '.$status, false, 403);
+        return $status === Password::PASSWORD_RESET ? messageResponse('Password reseted successfully') : messageResponse('Failed, ' . $status, false, 403);
     }
 
     // Refresh a token.

@@ -5,9 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Post extends Model
+class Post extends Model implements HasMedia
 {
     use HasFactory, Notifiable, InteractsWithMedia;
 
@@ -18,6 +19,7 @@ class Post extends Model
      */
     protected $fillable = [
         'user_id',
+        'title',
         'content',
     ];
     /**
@@ -26,9 +28,16 @@ class Post extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'created_at' => 'datetime:Y-m-d h:m:a',
-        'updated_at' => 'datetime:Y-m-d h:m:a',
+        'created_at' => 'datetime:D-m-y h:m:a',
+        'updated_at' => 'datetime:D-m-y h:m:a',
     ];
+
+
+    // Spatie Media Library Collections
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('posts')->singleFile();
+    }
 
     // --------------------- Relations --------------------- //
     // User relationship

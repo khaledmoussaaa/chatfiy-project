@@ -5,6 +5,8 @@ if (!function_exists('authResponse')) {
     function authResponse($token = null, $message = 'success', $success = true, $status = 200)
     {
         return response()->json([
+            'user_id' => auth()->user()->id,
+            'media' => auth()->user()->getFirstMedia('avatars'),
             'token' => $token,
             'success' => $success,
             'message' => $message,
@@ -15,7 +17,7 @@ if (!function_exists('authResponse')) {
 }
 
 // For Content Response
-if (!function_exists('contentResponse')) {
+if (!function_exists('contentResponse')) {                  
     function contentResponse($content, $message = 'success', $success = true, $status = 200)
     {
         return response()->json([

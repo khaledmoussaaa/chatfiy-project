@@ -101,8 +101,6 @@ class User extends Authenticatable implements JWTSubject, HasMedia, LaratrustUse
         return $this->hasMany(Post::class, 'user_id');
     }
 
-
-
     // Chats relationship
     public function chats()
     {

@@ -23,6 +23,7 @@ class PostRequest extends FormRequest
     {
         return [
             'media' => 'sometimes|image',
+            'title' => 'required|string',
             'content' => 'required|string',
         ];
     }
