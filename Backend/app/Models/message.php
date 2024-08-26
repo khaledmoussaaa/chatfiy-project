@@ -21,6 +21,7 @@ class Message extends Model
         'sender_id',
         'receiver_id',
         'message',
+        'seen'
     ];
     /**
      * The attributes that should be cast.
@@ -29,8 +30,17 @@ class Message extends Model
      */
     protected $casts = [
         'created_at' => 'datetime:Y-m-d h:m:a',
-        'updated_at' => 'datetime:Y-m-d h:m:a',
     ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'updated_at',
+    ];
+
 
     // --------------------- Relations --------------------- //   
     // Chat relationship
@@ -44,7 +54,7 @@ class Message extends Model
     {
         return $this->belongsTo(User::class, 'sender_id');
     }
-    
+
     // // Sender relationship
     // public function receiver()
     // {

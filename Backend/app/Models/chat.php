@@ -19,6 +19,7 @@ class Chat extends Model
         'user1_id',
         'user2_id',
     ];
+
     /**
      * The attributes that should be cast.
      *
@@ -26,19 +27,39 @@ class Chat extends Model
      */
     protected $casts = [
         'created_at' => 'datetime:Y-m-d h:m:a',
-        'updated_at' => 'datetime:Y-m-d h:m:a',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'updated_at',
     ];
 
     // --------------------- Relations --------------------- //   
-    // Users relationship
-    public function users()
+    // User 1 relationship
+    public function user1()
     {
-        return $this->belongsToMany(User::class, 'chats', 'user1_id', 'user2_id');
+        return $this->belongsTo(User::class, 'user1_id');
+    }
+
+    // User 2 relationship
+    public function user2()
+    {
+        return $this->belongsTo(User::class, 'user2_id');
     }
 
     // Messages relationship
     public function messages()
     {
         return $this->hasMany(Message::class, 'chat_id');
+    }
+
+    // Latest message relationship
+    public function latestMessage()
+    {
+        return $this->hasOne(Message::class, 'chat_id')->latest();
     }
 }
