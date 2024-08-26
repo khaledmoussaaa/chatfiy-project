@@ -17,14 +17,34 @@ class MessagesController extends Controller
     {
         // Ensure the chat belongs to the user
         $chat = Chat::findOrFail($chat_id);
-        if (!($chat->user1_id == auth_id() || $chat->user2_id == auth_id())) {
+        if (!($chat->user1_id == auth()->id() || $chat->user2_id == auth()->id())) {
             return messageResponse('Unauthorized', false, 403);
         }
-
+    
         // Get messages for the chat session
         $messages = $chat->messages()->orderBy('created_at')->get();
+    
+        // Add 'isSender' key and flatten the sender details
+        $messages->transform(function ($message) {
+            $message->isSender = $message->sender_id == auth()->id();
+            $message->user_id = $message->sender->id;
+            $message->name = $message->sender->name;
+            $message->email = $message->sender->email;
+            $message->phone = $message->sender->phone;
+    
+            // Extract the media's original URL
+            $message->media = $message->sender->media->isNotEmpty() ? $message->sender->media->first()->original_url : null;
+    
+            // Remove the sender relationship to avoid nested data
+            unset($message->sender);
+    
+            return $message;
+        });
+    
         return contentResponse($messages);
     }
+    
+    
 
     /**
      * Store a newly created resource in storage.

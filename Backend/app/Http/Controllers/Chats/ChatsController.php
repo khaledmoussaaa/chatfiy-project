@@ -14,10 +14,32 @@ class ChatsController extends Controller
     public function index()
     {
         // Get all chat sessions where the user is involved
-        $chats = Chat::where('user1_id', auth_id())->orWhere('user2_id',  auth_id())->get();
-        return contentResponse($chats);
+        $chats = Chat::where('user1_id', auth_id())
+                    ->orWhere('user2_id', auth_id())
+                    ->with(['users.media'])
+                    ->get();
+    
+        // Transform the chat data to include only necessary details
+        $response = $chats->map(function ($chat) {
+            return [
+                'chat_id' => $chat->id,
+                'user1_id' => $chat->user1_id,
+                'user2_id' => $chat->user2_id,
+                'users' => $chat->users->map(function ($user) {
+                    return [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'phone' => $user->phone,
+                                'media' =>$user->media->first()->original_url,
+                    ];
+                }),
+            ];
+        });
+    
+        return contentResponse($response);
     }
-
+    
     /**
      * Store a newly created resource in storage.
      */
