@@ -53,14 +53,16 @@ class AuthController extends Controller
     }
 
     // Get the authenticated User.
+    // Get the authenticated User.
     public function profile()
     {
         try {
             // Load the authenticated user with their posts, likes, and comments
             $user = auth()->user();
-            $userId = auth()->user()->id;
+            $userId = $user->id;
 
-            $response = $user->posts->map(function ($post) use ($userId) {
+            // Get posts of the authenticated user ordered by created_at in descending order
+            $response = $user->posts()->orderBy('created_at', 'desc')->get()->map(function ($post) use ($userId) {
                 return [
                     'user_id' => $post->user->id,
                     'user_name' => $post->user->name,

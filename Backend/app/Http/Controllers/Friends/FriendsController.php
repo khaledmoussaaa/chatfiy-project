@@ -41,36 +41,35 @@ class FriendsController extends Controller
     }
 
     // Get the list of friends
-    public function getFriends()
+    public function getFriends(string $status)
     {
         $userId = auth_id();
 
         // Get the list of friends where the user is either the requester or the receiver
-        $friends = User::whereIn('id', function ($query) use ($userId) {
+        $friends = User::whereIn('id', function ($query) use ($userId, $status) {
             $query->select('friend_id')
                 ->from('friends')
                 ->where('user_id', $userId)
-                ->where('status', 'accepted');
-        })->orWhereIn('id', function ($query) use ($userId) {
+                ->where('status', $status);
+        })->orWhereIn('id', function ($query) use ($userId, $status) {
             $query->select('user_id')
                 ->from('friends')
                 ->where('friend_id', $userId)
-                ->where('status', 'accepted');
+                ->where('status', $status);
         })->get();
 
         // Append is_friend key to each user
-        $friends = $friends->map(function ($friend) use ($userId) {
-            $isFriend = Friend::where(function ($query) use ($userId, $friend) {
+        $friends = $friends->map(function ($friend) use ($userId, $status) {
+            $isFriend = Friend::where(function ($query) use ($userId, $friend, $status) {
                 $query->where('user_id', $userId)
                     ->where('friend_id', $friend->id)
-                    ->where('status', 'accepted');
-            })->orWhere(function ($query) use ($userId, $friend) {
+                    ->where('status', $status);
+            })->orWhere(function ($query) use ($userId, $friend, $status) {
                 $query->where('user_id', $friend->id)
                     ->where('friend_id', $userId)
-                    ->where('status', 'accepted');
+                    ->where('status', $status);
             })->exists();
 
-            $friend->is_friend = $isFriend;
             return $friend;
         });
 
@@ -100,27 +99,7 @@ class FriendsController extends Controller
     // Search users and return with is_friend attribute
     public function searchUsers()
     {
-        $userId = auth_id();
-
-        // Retrieve users matching the search term
-        $users = User::where('id', '!=', $userId)->get();
-
-        // Append is_friend key to each user
-        $users = $users->map(function ($user) use ($userId) {
-            $isFriend = Friend::where(function ($query) use ($userId, $user) {
-                $query->where('user_id', $userId)
-                    ->where('friend_id', $user->id)
-                    ->where('status', 'accepted');
-            })->orWhere(function ($query) use ($userId, $user) {
-                $query->where('user_id', $user->id)
-                    ->where('friend_id', $userId)
-                    ->where('status', 'accepted');
-            })->exists();
-
-            $user->is_friend = $isFriend;
-            return $user;
-        });
-
-        return contentResponse($users);
+        $searchFriends = User::get();
+        return contentResponse($searchFriends->load('media'));
     }
 }
