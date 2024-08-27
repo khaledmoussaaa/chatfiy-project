@@ -53,13 +53,53 @@ class AuthController extends Controller
     }
 
     // Get the authenticated User.
-    public function me()
+    public function profile()
     {
         try {
-            return contentResponse(auth()->user());
+            // Load the authenticated user with their posts, likes, and comments
+            $user = auth()->user();
+            $userId = auth()->user()->id;
+
+            $response = $user->posts->map(function ($post) use ($userId) {
+                return [
+                    'user_id' => $post->user->id,
+                    'user_name' => $post->user->name,
+                    'user_media' => $post->user->media->first() ? $post->user->media->first()->original_url : null,
+                    'post_id' => $post->id,
+                    'post_media' => $post->media->first()->original_url,
+                    'title' => $post->title,
+                    'content' => $post->content,
+                    'created_at' => $post->created_at->format('Y-m-d H:i:s'),
+                    'isLiked' => $post->likes->contains('user_id', $userId),
+                    'total_likes' => $post->likes->count(),
+                    'comments' => $post->comments->map(function ($comment) {
+                        return [
+                            'user_id' => $comment->user->id,
+                            'user_name' => $comment->user->name,
+                            'user_media' => $comment->user->media->first()->original_url,
+                            'comment' => $comment->comment,
+                            'created_at' => $comment->created_at->format('Y-m-d H:i:s')
+                        ];
+                    }),
+                    'likes' => $post->likes->map(function ($like) {
+                        return [
+                            'user_id' => $like->user->id,
+                            'user_name' => $like->user->name,
+                            'user_media' => $like->user->media->first()->original_url
+                        ];
+                    }),
+                ];
+            });
+
+            return contentResponse($response);
         } catch (\Throwable $error) {
-            return messageResponse($error, false, 401);
+            return messageResponse($error->getMessage(), false, 401);
         }
+    }
+
+    public function me()
+    {
+        return contentResponse(auth()->user());
     }
 
     // Log the user out (Invalidate the token).

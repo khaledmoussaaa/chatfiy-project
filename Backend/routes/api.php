@@ -27,7 +27,7 @@ Route::group(['middleware' => 'api'], function () {
     Route::group(['middleware' => 'auth:api'], function () {
         // About User
         Route::group(['prefix' => 'auth'], function () {
-            Route::post('me', 'Auth\AuthController@me');
+            Route::get('me', 'Auth\AuthController@me');
             Route::post('refresh', 'Auth\AuthController@refresh');
             Route::post('logout', 'Auth\AuthController@logout');
         });
@@ -49,5 +49,8 @@ Route::group(['middleware' => 'api'], function () {
         Route::post('posts-like', 'Posts\PostsController@likeOrUnlikePost');
         Route::post('posts-comment', 'Posts\PostsController@addComment');
         Route::post('posts-getComment/{post_id}', 'Posts\PostsController@getComments');
+
+        // Profile Resource
+        Route::get('profile/me', 'Auth\AuthController@profile');
     });
 });
