@@ -7,6 +7,7 @@ use App\Http\Requests\Friends\FriendRequest;
 use App\Models\Friend;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FriendsController extends Controller
 {
@@ -23,6 +24,7 @@ class FriendsController extends Controller
             return messageResponse('Cannot add yourself as a friend', 400);
         }
 
+
         $friend = Friend::where(function ($query) use ($userId, $friendId) {
             $query->where('user_id', $userId)
                 ->where('friend_id', $friendId);
@@ -31,9 +33,15 @@ class FriendsController extends Controller
                 ->where('friend_id', $userId);
         })->first();
 
+        if ($data['status'] == 'rejected' && $friend) {
+            $friend->forceDelete();
+            return messageResponse();
+        }
+
         if ($friend) {
             $friend->update($data);
         } else {
+            $data['status'] = 'pending';
             $friend = Friend::create($data);
         }
 
@@ -51,29 +59,34 @@ class FriendsController extends Controller
                 ->from('friends')
                 ->where('user_id', $userId)
                 ->where('status', $status);
-        })->orWhereIn('id', function ($query) use ($userId, $status) {
-            $query->select('user_id')
-                ->from('friends')
-                ->where('friend_id', $userId)
-                ->where('status', $status);
-        })->get();
-
-        // Append is_friend key to each user
-        $friends = $friends->map(function ($friend) use ($userId, $status) {
-            $isFriend = Friend::where(function ($query) use ($userId, $friend, $status) {
-                $query->where('user_id', $userId)
-                    ->where('friend_id', $friend->id)
-                    ->where('status', $status);
-            })->orWhere(function ($query) use ($userId, $friend, $status) {
-                $query->where('user_id', $friend->id)
+        })
+            ->orWhereIn('id', function ($query) use ($userId, $status) {
+                $query->select('user_id')
+                    ->from('friends')
                     ->where('friend_id', $userId)
                     ->where('status', $status);
-            })->exists();
+            })
+            ->get()
+            ->map(function ($friend) use ($userId, $status) {
+                $friendship = DB::table('friends')
+                    ->where(function ($query) use ($friend, $userId, $status) {
+                        $query->where('user_id', $userId)
+                            ->where('friend_id', $friend->id)
+                            ->where('status', $status);
+                    })
+                    ->orWhere(function ($query) use ($friend, $userId, $status) {
+                        $query->where('friend_id', $userId)
+                            ->where('user_id', $friend->id)
+                            ->where('status', $status);
+                    })
+                    ->first();
 
-            return $friend;
-        });
+                // Attach the user_id from the friends table
+                $friend->snedFriend_id = $friendship->user_id;
+                return $friend;
+            });
 
-        return contentResponse($friends);
+        return contentResponse($friends->load('media'));
     }
 
     public function removeFriend(string $friend_id)
@@ -95,11 +108,31 @@ class FriendsController extends Controller
 
         return messageResponse();
     }
-
-    // Search users and return with is_friend attribute
+    
     public function searchUsers()
     {
-        $searchFriends = User::get();
-        return contentResponse($searchFriends->load('media'));
+        $userId = auth_id();
+    
+        // Get all users
+        $users = User::all()->map(function ($user) use ($userId) {
+            // Check if the current user is a friend of the authenticated user
+            $isFriend = DB::table('friends')
+                ->where(function ($query) use ($user, $userId) {
+                    $query->where('user_id', $userId)
+                        ->where('friend_id', $user->id);
+                })
+                ->orWhere(function ($query) use ($user, $userId) {
+                    $query->where('friend_id', $userId)
+                        ->where('user_id', $user->id);
+                })
+                ->exists();
+    
+            // Attach the isFriend attribute to the user
+            $user->isFriend = $isFriend;
+            return $user;
+        });
+    
+        return contentResponse($users->load('media'));
     }
+    
 }

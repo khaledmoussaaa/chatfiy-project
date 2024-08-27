@@ -19,20 +19,21 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // $this->call(LaratrustSeeder::class);
-        // User::factory()->count(10)->create();
+        
+        User::factory()->count(10)->create();
 
-        $user = User::create([
-            'name' => 'User 1',
-            'email' => 'user1@gmail.com',
-            'phone' => '01015571129',
-            'password' => '12345678'
-        ]);
+        // $user = User::create([
+        //     'name' => 'User 1',
+        //     'email' => 'user1@gmail.com',
+        //     'phone' => '01015571129',
+        //     'password' => '12345678'
+        // ]);
 
-        $user = User::create([
-            'name' => 'User 2',
-            'email' => 'user2@gmail.com',
-            'phone' => '01015571130',
-            'password' => '12345678'
-        ]);
+        // $user = User::create([
+        //     'name' => 'User 2',
+        //     'email' => 'user2@gmail.com',
+        //     'phone' => '01015571130',
+        //     'password' => '12345678'
+        // ]);
     }
 }
