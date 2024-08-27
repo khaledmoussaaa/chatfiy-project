@@ -71,24 +71,7 @@ class MessagesController extends Controller
             'media' => $message->sender->media->isNotEmpty() ? $message->sender->media->first()->original_url : null,
         ];
 
-        broadcast(new MessageSent($data, $chat->user2_id))->toOthers();
+        broadcast(new MessageSent($data, $data['chat_id']))->toOthers();
         return contentResponse($data);
-    }
-
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }
