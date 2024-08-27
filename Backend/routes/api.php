@@ -39,7 +39,7 @@ Route::group(['middleware' => 'api'], function () {
         // Friends Resource
         Route::post('add/friends', 'Friends\FriendsController@addOrRejectFriend');
         Route::get('get/friends/{status}', 'Friends\FriendsController@getFriends');
-        Route::post('search/friends', 'Friends\FriendsController@searchUsers');
+        Route::get('search/friends', 'Friends\FriendsController@searchUsers');
         Route::delete('remove/friends/{friend_id}', 'Friends\FriendsController@removeFriend');
         
         // Posts Resource
