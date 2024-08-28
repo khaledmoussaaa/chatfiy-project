@@ -6,45 +6,42 @@ import {
     List,
     ListItem,
     ListItemPrefix,
-    ListItemSuffix,
-    Chip,
     Drawer,
     Card,
 } from "@material-tailwind/react";
 import {
-    PresentationChartBarIcon,
     UserCircleIcon,
-    Cog6ToothIcon,
     InboxIcon,
     PowerIcon,
-    BellAlertIcon
+    UsersIcon
 } from "@heroicons/react/24/solid";
 import {
     Bars3Icon,
+    HomeIcon,
     XMarkIcon,
 } from "@heroicons/react/24/outline";
 import useAuthContext from "../../Context/AuthContext";
 
 const menuItems = [
     {
-        icon: <PresentationChartBarIcon className="h-5 w-5" />,
-        title: 'Dashboard',
-        navigate: '/dashboard/posts',
+        icon: <HomeIcon className="h-5 w-5" />,
+        title: 'Timeline',
+        navigate: '/timeline/posts',
     },
     {
         icon: <InboxIcon className="h-5 w-5" />,
         title: 'Inbox',
-        navigate: '/dashboard/chats',
+        navigate: '/timeline/chats',
     },
     {
         icon: <UserCircleIcon className="h-5 w-5" />,
         title: 'Profile',
-        navigate: '/dashboard/profile',
+        navigate: '/timeline/profile',
     },
     {
-        icon: <Cog6ToothIcon className="h-5 w-5" />,
-        title: 'Settings',
-        navigate: '/dashboard/settings',
+        icon: <UsersIcon className="h-5 w-5" />,
+        title: 'Friends',
+        navigate: '/timeline/friends',
     },
     {
         icon: <PowerIcon className="h-5 w-5" />,
@@ -111,17 +108,7 @@ function Sidebar({ Open }) {
                                             {item.icon}
                                         </ListItemPrefix>
                                         {item.title}
-                                        {item.title === 'Inbox' && (
-                                            <ListItemSuffix>
-                                                <Chip
-                                                    value="14"
-                                                    size="sm"
-                                                    variant="ghost"
-                                                    color="blue-gray"
-                                                    className="rounded-full"
-                                                />
-                                            </ListItemSuffix>
-                                        )}
+                                  
                                     </ListItem>
                                 </NavLink>
                                 {index === 1 && <hr className="my-2 border-blue-gray-50" />}
