@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 // Controller
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\EditProfileRequest;
 use App\Http\Requests\Auth\ForgetPassword;
 // Requests
 use App\Http\Requests\Auth\LoginRequest;
@@ -99,10 +100,21 @@ class AuthController extends Controller
         }
     }
 
-    public function me()
-    {
-        return contentResponse(auth()->user());
-    }
+ public function me()
+{
+    $user = auth()->user()->load('media');
+
+    // Extract the original URL from the media array
+    $media = $user->media->isNotEmpty() ? $user->media->first()->original_url : null;
+    $data =[
+        'id' => $user->id,
+        'name' => $user->name,
+        'email' => $user->email,
+        'phone' => $user->phone,
+        'media' => $media,
+    ];
+    return contentResponse($data);
+}
 
     // Log the user out (Invalidate the token).
     public function logout()
@@ -139,6 +151,21 @@ class AuthController extends Controller
             return contentResponse(auth()->refresh());
         } catch (\Throwable $error) {
             return messageResponse('Failed, occured error..!', false, 401);
+        }
+    }
+
+    // Edit Profile
+    public function editProfile(EditProfileRequest $request, User $user)
+    {
+        try {
+            $user->update($request->validated());
+
+            if ($request->hasFile('media')) {
+                $user->addMediaFromRequest('media')->toMediaCollection('avatars');
+            }
+            return messageResponse();
+        } catch (\Throwable $error) {
+            return messageResponse($error->getMessage(), false, 401);
         }
     }
 }

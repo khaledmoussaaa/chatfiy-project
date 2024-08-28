@@ -52,5 +52,6 @@ Route::group(['middleware' => 'api'], function () {
 
         // Profile Resource
         Route::get('profile/me', 'Auth\AuthController@profile');
+        Route::post('profile/edit/{user}', 'Auth\AuthController@editProfile');
     });
 });

@@ -117,7 +117,7 @@ class PostsController extends Controller
                 'user_name' => $post->user->name,
                 'user_media' => $post->user->media->first() ? $post->user->media->first()->original_url : null,
                 'post_id' => $post->id,
-                'post_media' => $post->media->first()->original_url,
+                'post_media' => $post->media->first()->original_url ?? null,
                 'title' => $post->title,
                 'content' => $post->content,
                 'created_at' => $post->created_at->format('Y-m-d H:i:s'),
@@ -127,7 +127,7 @@ class PostsController extends Controller
                     return [
                         'user_id' => $comment->user->id,
                         'user_name' => $comment->user->name,
-                        'user_media' => $comment->user->media->first()->original_url,
+                        'user_media' => $comment->user->media->first()->original_url ?? null,
                         'comment' => $comment->comment,
                         'created_at' => $comment->created_at->format('Y-m-d H:i:s')
                     ];
@@ -136,7 +136,7 @@ class PostsController extends Controller
                     return [
                         'user_id' => $like->user->id,
                         'user_name' => $like->user->name,
-                        'user_media' => $like->user->media->first()->original_url
+                        'user_media' => $like->user->media->first()->original_url ?? null
                     ];
                 }),
             ];
