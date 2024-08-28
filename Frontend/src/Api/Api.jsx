@@ -21,10 +21,21 @@ const getToken = () => {
 export const getUserId = () => {
     return cookie.get('user_id');
 };
-// Get User ID
+// Get User Media
 export const getMedia = () => {
     return cookie.get('media');
 };
+// Get Auth
+export const getAuth = async () => {
+    try {
+        const response = await axiosInstance.get('/auth/me');
+        return response.data.content;
+    }
+    catch (error) {
+        console.log(error);
+    }
+};
+
 // Delete Token
 export const deleteToken = () => {
     cookie.remove('token', { path: '/' });
