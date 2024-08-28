@@ -1,14 +1,10 @@
 import axiosInstance from "../Api";
 
-// -------- Constant Vraibles -------- //
-const prefix = 'chats'
-
 // -------- Constant Apis For Users -------- //
 // Fetches Users
 export const chatsUsers = async () => {
     try {
         const response = await axiosInstance.get('/chats');
-        console.log(response);
         return response.data.content;
     }
     catch (error) {
@@ -32,6 +28,30 @@ export const sendMessage = async (chat_id, message) => {
     
     try {
         const response = await axiosInstance.post('messages', {chat_id, message});
+        return response.data;
+    }
+    catch (error) {
+        console.log(error);
+    }
+};
+
+
+// Get Friends For User
+export const getFriends = async () => {
+    
+    try {
+        const response = await axiosInstance.get('get/friends/accepted');
+        return response.data;
+    }
+    catch (error) {
+        console.log(error);
+    }
+};
+
+// Add New Chat
+export const newChat = async (user_id) => {
+    try {
+        const response = await axiosInstance.post('chats', {user_id});
         return response.data;
     }
     catch (error) {
