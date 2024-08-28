@@ -66,14 +66,7 @@ function Login() {
 
                             {/* Message Error */}
                             {errors.message && <span className="text-red-500 absolute bottom-7 text-center">{errors.message}</span>}
-
-                            <div className="flex justify-between">
-                                <div>
-                                    <input type="checkbox" />
-                                    <span className="ml-2">Remember Me</span>
-                                </div>
-                                <Link to={"/login"} className="text-gray-600 underline">Forget password</Link>
-                            </div>
+                         
                         </div>
 
                         {/* Submit */}

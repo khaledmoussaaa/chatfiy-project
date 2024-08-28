@@ -24,7 +24,7 @@ function Register() {
     const handleChange = (e) => {
         if (e.target.name === 'media') {
             setForm({ ...form, media: e.target.files[0] });
-            
+
         } else {
             setForm({ ...form, [e.target.name]: e.target.value });
         }
@@ -32,16 +32,22 @@ function Register() {
 
     // handle form submit
     const handleSubmit = (e) => {
+        const formData = { ...form };
+
+        if (!formData.media) {
+            delete formData.media;
+        }
+        
         e.preventDefault();
-        register(form).then((response) => { setForm(initialFormState), console.log(response); });
+        register(formData).then((response) => { setForm(initialFormState), console.log(response); });
     };
 
 
     return (
-        <div className="w-full h-full relative bg-[#f4f7fe]">
+        <div className="w-full h-screen p-5 flex justify-center items-center relative overflow-auto bg-[#f4f7fe]">
 
             {/* Container Form */}
-            <div className="w-[95%] h-fit sm:w-2/3 flex justify-between absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-lg shadow-slate-200">
+            <div className="w-[95%] h-fit sm:w-2/3 flex justify-between bg-white rounded-2xl shadow-lg shadow-slate-200">
 
                 {/* Form */}
                 <div className="w-full h-full xl:w-1/2">
@@ -53,7 +59,7 @@ function Register() {
                     <Header header="Hi There" subheader="Create Account, Please enter your details." />
 
                     {/* Form */}
-                    <form onSubmit={handleSubmit} className="w-full mx-auto flex justify-center flex-col mt-5 gap-3 sm:gap-6">
+                    <form onSubmit={handleSubmit} className="w-full h-full mx-auto flex justify-center flex-col mt-5 gap-3 sm:gap-6 overflow-y-auto">
                         <label htmlFor="imageupload" className='mx-auto rounded-full w-40 h-40 relative overflow-hidden'>
                             <img src={form.media ? URL.createObjectURL(form.media) : images.profile} className="w-full h-full absolute object-cover" name='media' alt="" />
                             <input id='imageupload' type="file" name='media' onChange={handleChange} className='hidden' />
