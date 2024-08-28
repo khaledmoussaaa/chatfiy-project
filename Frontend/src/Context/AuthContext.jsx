@@ -34,11 +34,11 @@ export const AuthProvider = ({ children }) => {
         setErrors({});
         try {
             const response = await axiosInstance.post('auth/login', data);
-            setToken(response.data.token, response.data.user_id, response.data.media.original_url)
+            setToken(response.data.token, response.data.user_id, response.data.media && response.data.media.original_url)
             setSuccess(true);
             setErrors({});
             setloading(true)
-            navigate('/dashboard');
+            navigate('/timeline/posts');
         } catch (error) {
             handleAuthError(error);
             setloading(false)
@@ -51,11 +51,11 @@ export const AuthProvider = ({ children }) => {
 
         try {
             const response = await axiosInstance.post('auth/register', data);
-            setToken(response.data.token, response.data.user_id);
+            setToken(response.data.token, response.data.user_id, response.data.media && response.data.media.original_url)
             setSuccess(true);
             setErrors({});
             setloading(true)
-            navigate('/dashboard');
+            navigate('/timeline/posts');
         } catch (error) {
             handleAuthError(error);
             setloading(false)
